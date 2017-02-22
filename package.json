@@ -1,0 +1,36 @@
+{
+  "author": {
+    "name": "kyle-ssg"
+  },
+  "bin": {
+    "react-native-app-id": "index.js"
+  },
+  "bugs": {
+    "url": "https://github.com/kyle-ssg/react-native-app-id/issues"
+  },
+  "dependencies": {
+    "cheerio": "^0.22.0",
+    "file-exists": "^2.0.0",
+    "lodash": "^4.17.4"
+  },
+  "description": "Change the package and bundle id of any react-native project.",
+  "devDependencies": {},
+  "gitHead": "8483a064d1060b5f526dd23d2f82bddb72f619c9",
+  "homepage": "https://github.com/kyle-ssg/react-native-app-id#readme",
+  "keywords": [],
+  "license": "ISC",
+  "main": "index.js",
+  "name": "react-native-app-id",
+  "optionalDependencies": {},
+  "peerDependencies": {},
+  "readme": "ERROR: No README data found!",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/kyle-ssg/react-app-id.git"
+  },
+  "scripts": {
+    "start": "node .",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "version": "0.2.0"
+}
