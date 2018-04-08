@@ -7,4 +7,4 @@ Cross platform approach to setting a bundle ID. This project edits the required 
 ```npm i react-native-app-id-fixed -g```
 
 #Usage
-```react-native-app-id com.myawesome.app```
+```react-native-app-id-fixed com.myawesome.app```
