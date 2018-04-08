@@ -1,6 +1,6 @@
 {
   "name": "react-native-app-id",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "description": "Change the package and bundle id of any react-native project.",
   "main": "index.js",
   "scripts": {
