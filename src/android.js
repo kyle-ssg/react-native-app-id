@@ -1,9 +1,11 @@
 const fs = require('fs');
 const path = require('path');
-const gradleBuild = path.resolve(process.cwd(), 'android/app/build.gradle');
+
+const dir = process.argv[3] || process.cwd();
+const gradleBuild = path.resolve(dir, 'android/app/build.gradle');
 
 
-console.log(gradleBuild);
+console.log("ANDROID: Reading" + gradleBuild);
 
 module.exports = (newID) => {
     return new Promise((resolve, reject) => {
@@ -13,7 +15,7 @@ module.exports = (newID) => {
             if (err == null) {
                 const bundleId = markup.match(/applicationId .*?\".*?\"/)[0];
                 if (bundleId) {
-                    console.log("Found android bundle Id", bundleId);
+                    console.log("ANDROID: Found android bundle Id", bundleId);
                     changes[gradleBuild] = markup.replace(/applicationId .*?\".*?\"/, 'applicationId "' + newID +'"');
                 } else {
                     reject('Could not detect')

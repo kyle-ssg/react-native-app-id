@@ -1,14 +1,14 @@
 const fs = require('fs');
 const path = require('path');
+const dir = process.argv[3] || process.cwd();
 
 
 module.exports = (newID) => {
     return new Promise((resolve, reject) => {
 
 
-        const srcpath = path.resolve(process.cwd(), 'ios/');
+        const srcpath = path.resolve(dir, 'ios/');
 
-        console.log("Searching for ios directory", srcpath);
 
         let folders;
         try {
@@ -21,21 +21,25 @@ module.exports = (newID) => {
 
 
         const folder = folders && folders.find((f) => f.indexOf('.xcodeproj') > -1).replace('.xcodeproj', '');
-        const plist = folders && path.resolve(process.cwd(), 'ios/' + folder + '/Info.plist');
-        const pbxproj = folders && path.resolve(process.cwd(), 'ios/' + folder + '.xcodeproj/project.pbxproj');
+        const plist = folders && path.resolve(dir, 'ios/' + folder + '/Info.plist');
+        const pbxproj = folders && path.resolve(dir, 'ios/' + folder + '.xcodeproj/project.pbxproj');
         let changes = {};
 
-        console.log('Reading', plist);
+        console.log('IOS: Reading', plist);
         if (!plist) {
             reject('Are you sure you are in a react native project?');
         }
 
         fs.readFile(plist, 'utf8', (err, markup) => {
             if (err == null) {
-                var searchBundleId = new RegExp('\\$\\(PRODUCT_BUNDLE_IDENTIFIER\\)', 'g');
-                if (markup.match(searchBundleId)) {
-                    console.log('Found iOS bundle ID', searchBundleId);
-                    changes[plist] = markup.replace(searchBundleId, newID);
+                var searchBundleId = new RegExp("(<key>CFBundleIdentifier</key>\n.*?<string>)(.*?)(</string>)", 'm');
+                var match = markup.match(searchBundleId);
+
+                if (match) {
+                    console.log('IOS: Found iOS bundle ID', match[2]);
+                    changes[plist] = markup.replace(searchBundleId, "$1"+newID+"$3");
+                } else {
+                    console.log("IOS ERROR: Could not find product bundle identifier");
                 }
                 resolve(changes);
             } else {
