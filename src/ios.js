@@ -10,7 +10,7 @@ module.exports = (newID) => {
 
         console.log("Searching for ios directory", srcpath);
 
-        var folders;
+        let folders;
         try {
             folders = fs.readdirSync(srcpath)
                 .filter(file => fs.statSync(path.join(srcpath, file)).isDirectory())
@@ -23,52 +23,24 @@ module.exports = (newID) => {
         const folder = folders && folders.find((f) => f.indexOf('.xcodeproj') > -1).replace('.xcodeproj', '');
         const plist = folders && path.resolve(process.cwd(), 'ios/' + folder + '/Info.plist');
         const pbxproj = folders && path.resolve(process.cwd(), 'ios/' + folder + '.xcodeproj/project.pbxproj');
+        let changes = {};
 
         console.log('Reading', plist);
         if (!plist) {
             reject('Are you sure you are in a react native project?');
         }
 
-        var changes = {};
-
-        //CFBundleIdentifier
-
-
-        fs.readFile(pbxproj, 'utf8', (err, markup) => {
+        fs.readFile(plist, 'utf8', (err, markup) => {
             if (err == null) {
-                var bundleId = markup.match(/PRODUCT_BUNDLE_IDENTIFIER = (.*?);/);
-                if (bundleId) {
-                    console.log('Found PRODUCT_BUNDLE_IDENTIFIER', bundleId[1]);
-                    changes[pbxproj] = markup.replace(/PRODUCT_BUNDLE_IDENTIFIER = .*?;/g, 'PRODUCT_BUNDLE_IDENTIFIER = ' + newID + ';');
-
-
-                    //Now that we have the bundle id we can replace everywhere else
-                    fs.readFile(plist, 'utf8', (err, markup) => {
-                        if (err == null) {
-
-                            var search = new RegExp(bundleId[1], 'g')
-                            if (markup.match(search)) {
-                                console.log('Found iOS bundle ID', bundleId[1]);
-                                changes[plist] = markup.replace(search,  newID );
-
-                                resolve(changes);
-                            } else {
-                                reject('Could not detect ios app id from plist')
-                            }
-                        } else {
-                            reject('Are you sure you are in a react native project?');
-                        }
-                    });
-
-
-                } else {
-                    reject('Could not detect ios app id from plist')
+                var searchBundleId = new RegExp('\\$\\(PRODUCT_BUNDLE_IDENTIFIER\\)', 'g');
+                if (markup.match(searchBundleId)) {
+                    console.log('Found iOS bundle ID', searchBundleId);
+                    changes[plist] = markup.replace(searchBundleId, newID);
                 }
+                resolve(changes);
             } else {
                 reject('Are you sure you are in a react native project?');
             }
         });
-
-
     })
 }
