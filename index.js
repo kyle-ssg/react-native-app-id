@@ -1,33 +1,48 @@
 #!/usr/bin/env node
 
-const newID = process.argv[2];
-const newName = process.argv[3];
-const _ = require('lodash');
-const fs = require('fs');
+const newID = process.argv[2]
+const newName = process.argv[3]
+const option = process.argv[4]
+const onlyIos = option === "--ios"
+const onlyAndroid = option === "--android"
+const _ = require('lodash')
+const fs = require('fs')
 
-if (newID && newID.split('.').length <2) {
-    console.log('Please type a valid bundle id e.g. com.solidstategroup.myapp');
-    return;
+const help = () => {
+    console.log("USAGE: react-native-app-id IDENTIFIER NAME [--ios/--android]")
+    console.log("")
+    console.log("  IDENTIFIER: example: com.solidstategroup.myapp")
+    console.log("  NAME: example. MyApp")
+    console.log("  --ios: Only updates the iOS app")
+    console.log("  --android: Only updates the Android app")
 }
 
-Promise.all([
-    require('./src/ios')(newID, newName),
-    require('./src/android')(newID, newName)
-])
-    .then((items) => {
+if (option && !onlyIos && !onlyAndroid) {
+    console.log("option must be empty or --ios or --android")
+    console.log("")
+    help()
+    return
+}
 
-        const ios = items[0];
-        const android = items[1];
+if (newID && newID.split('.').length < 2) {
+    help()
+    return
+}
 
-        _.each(ios, (data, location) => {
-            console.log(`Writing ${location}`);
-            fs.writeFileSync(location, data);
-        });
-
-        _.each(android, (data, location) => {
-            console.log(`Writing ${location}`);
-            fs.writeFileSync(location, data);
-        });
-
+const process = (iosOrAndroid) => {
+    _.each(iosOrAndroid, (data, location) => {
+        console.log(`Writing ${location}`)
+        fs.writeFileSync(location, data)
     })
-    .catch(e => console.log(e));
+}
+
+const requires = []
+
+if (onlyIos) {
+    require('./src/ios')(newID, newName).then(process).catch(console.error)
+} else if (onlyAndroid) {
+    require('./src/android')(newID, newName).then(process).catch(console.error)
+} else {
+    require('./src/ios')(newID, newName).then(process).catch(console.error)
+    require('./src/android')(newID, newName).then(process).catch(console.error)
+}
