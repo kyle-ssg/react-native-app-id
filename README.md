@@ -1,1 +1,1 @@
-Deprecated use [react-native-rename](https://github.com/junedomingo/react-native-rename)
+Deprecated in favour of [react-native-rename](https://github.com/junedomingo/react-native-rename)
